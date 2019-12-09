@@ -5,7 +5,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt
 from interface import Ui_MainWindow
-from settings_window import Ui_Settings_window
+from settings_window import Ui_SettingsWindow
 from zipfile import ZipFile
 from rarfile import RarFile
 import xmltodict
@@ -13,14 +13,14 @@ import rarfile
 import patoolib
 
 
-class Settings_window(QtWidgets.QWidget):
+class SettingsWindow(QtWidgets.QWidget):
     # class for Settings window
     def __init__(self):
-        super(Settings_window, self).__init__()
-        self.sw = Ui_Settings_window()
+        super(SettingsWindow, self).__init__()
+        self.sw = Ui_SettingsWindow()
         self.sw.setupUi(self)
-        self.sw.toolButton_unrar.clicked.connect(self.toolButton_unrar_Clicked)
-        self.sw.pushButton.clicked.connect(self.ok_Clicked)
+        self.sw.toolButton_unrar.clicked.connect(self.tool_button_unrar_clicked)
+        self.sw.pushButton.clicked.connect(self.ok_clicked)
         self.sw.pushButton_2.clicked.connect(self.cancel_Clicked)
         self.str_unrarfile_path = ''
         self.sett_content = sett_content
@@ -34,13 +34,13 @@ class Settings_window(QtWidgets.QWidget):
         except Exception:
             pass
 
-    def toolButton_unrar_Clicked(self):
+    def tool_button_unrar_clicked(self):
         # clicking on '...' button shows FileDialog to choose Unrar.exe
         self.unrarfile_path = QFileDialog.getOpenFileName(self, 'Specify Unrar.exe path', '/home')
         self.str_unrarfile_path = str(self.unrarfile_path[0])
         self.sw.label_2.setText(self.str_unrarfile_path)
 
-    def ok_Clicked(self):
+    def ok_clicked(self):
         # if Unrar.exe was chosen clicking on OK button saves the path to a txt-file
         if self.str_unrarfile_path != '':
             with open('settings.txt', 'w') as settings_file:
@@ -53,19 +53,17 @@ class Settings_window(QtWidgets.QWidget):
         self.close()
 
 
-
-
-class Mywindow(QtWidgets.QMainWindow):
+class MyWindow(QtWidgets.QMainWindow):
     # class for main window of program
     def __init__(self):
-        super(Mywindow, self).__init__()
+        super(MyWindow, self).__init__()
         self.files_to_save_list = []
         self.input_path = ''
         self.output_path = ''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.Input_dir_toolButton.clicked.connect(self.input_dir_toolButton_Clicked)
-        self.ui.Output_dir_toolButton.clicked.connect(self.output_dir_toolButton_Clicked)
+        self.ui.Input_dir_toolButton.clicked.connect(self.input_dir_tool_button_clicked)
+        self.ui.Output_dir_toolButton.clicked.connect(self.output_dir_tool_button_clicked)
         self.ui.F01X.stateChanged.connect(self.chooseF01X)
         self.ui.F02X.stateChanged.connect(self.chooseF02X)
         self.ui.F6DX.stateChanged.connect(self.chooseF6DX)
@@ -73,7 +71,7 @@ class Mywindow(QtWidgets.QMainWindow):
         self.ui.F20X.stateChanged.connect(self.chooseF20X)
         self.ui.FA7X.stateChanged.connect(self.chooseFA7X)
         self.ui.F6BX.stateChanged.connect(self.chooseF6BX)
-        self.ui.Start.clicked.connect(self.start_Clicked)
+        self.ui.Start.clicked.connect(self.start_clicked)
         self.ui.analysis_date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.ui.analysis_date.setCalendarPopup(True)
         self.ui.analysis_date.dateChanged.connect(self.update_date)
@@ -81,24 +79,21 @@ class Mywindow(QtWidgets.QMainWindow):
         self.ui.actionSettings.triggered.connect(self.show_settings_window)
         self.sett_content = sett_content
 
-
     def show_settings_window(self):
         # clicking on file -> settings shows Settings window
-        self.settdWin = Settings_window()
+        self.settdWin = SettingsWindow()
         self.settdWin.show()
-
 
     def update_date(self, user_date):
         self.analysis_date = user_date.toString("dd.MM.yyyy")
 
-
-    def input_dir_toolButton_Clicked(self):
+    def input_dir_tool_button_clicked(self):
         # clicking '...' button near input dir. shows FileDialog. After choosing the dir it
         # handles in input_path variable
         self.input_path = QFileDialog.getExistingDirectory(self, 'Setup Input Folder', '/home')
         self.ui.Input_directory_label.setText(self.input_path)
 
-    def output_dir_toolButton_Clicked(self):
+    def output_dir_tool_button_clicked(self):
         # clicking '...' button near output dir. shows FileDialog. After choosing the dir it
         # handles in output_path variable
         self.output_path = QFileDialog.getExistingDirectory(self, 'Setup Output Folder', '/home')
@@ -177,7 +172,7 @@ class Mywindow(QtWidgets.QMainWindow):
         msg.setIcon(QMessageBox.Critical)
         msg.exec_()
 
-    def start_Clicked(self):
+    def start_clicked(self):
         # what happens when Start is clicked
         # truing to read settings.txt with path to unrar.exe and configurating RarFile module
         try:
@@ -209,9 +204,9 @@ class Mywindow(QtWidgets.QMainWindow):
                 QtWidgets.QApplication.processEvents()  # refresh window to show new text in the text browser
                 file_read = self.input_path + '/' + file  # choosing the method of processing of file
                 if self.what_file_is(file_read) == 'Zip':
-                    self.Zip_archive(file_read)
+                    self.zip_archive(file_read)
                 elif self.what_file_is(file_read) == 'Rar':
-                    self.Rar_archive(file_read)
+                    self.rar_archive(file_read)
                 else:
                     pass
                 count += 1
@@ -220,7 +215,6 @@ class Mywindow(QtWidgets.QMainWindow):
             self.ui.textBrowser.append("<span style=\" font-size:9pt; font-weight:600;"
                                        "color:#0000ff;\" >---Finished!---</span>")
             QtWidgets.QApplication.processEvents()  # at the end print Finished! and refresh window
-
 
     def what_file_is(self, file_read):
         # defines file's type
@@ -237,7 +231,7 @@ class Mywindow(QtWidgets.QMainWindow):
                 patoolib.repack_archive(file_read, file_read + '.zip')
                 os.remove(file_read)
 
-    def Zip_archive(self, file_read):
+    def zip_archive(self, file_read):
         # method for zip archive processing
         done_set = set()
         try:
@@ -245,11 +239,11 @@ class Mywindow(QtWidgets.QMainWindow):
                 for i in my_archive.namelist():  # taking list of all files and reading files
                     with my_archive.open(i) as myfile:
                         try:
-                            xmlDict = xmltodict.parse(myfile)  # parse xml
+                            xml_dict = xmltodict.parse(myfile)  # parse xml
                             context = my_archive.read(i)
-                            statform = xmlDict['NBUSTATREPORT']['HEAD']['STATFORM']
-                            kod = xmlDict['NBUSTATREPORT']['HEAD']['EDRPOU']
-                            report_date = xmlDict['NBUSTATREPORT']['HEAD']['REPORTDATE']
+                            statform = xml_dict['NBUSTATREPORT']['HEAD']['STATFORM']
+                            kod = xml_dict['NBUSTATREPORT']['HEAD']['EDRPOU']
+                            report_date = xml_dict['NBUSTATREPORT']['HEAD']['REPORTDATE']
                             # taking a name of statfile and checking if it was selected to save
                             if statform in self.files_to_save_list and report_date == self.analysis_date:
                                 with open(self.output_path + '/' + statform + '_' + kod + '.xml', 'wb') as output_file:
@@ -259,14 +253,14 @@ class Mywindow(QtWidgets.QMainWindow):
                             # if file in archive is archive, then do this staff:
                             try:
                                 with ZipFile(myfile) as inner_archive:
-                                    for i in inner_archive.namelist():
-                                        with inner_archive.open(i) as myfile:
+                                    for y in inner_archive.namelist():
+                                        with inner_archive.open(y) as myfile:
                                             try:
-                                                xmlDict = xmltodict.parse(myfile)
-                                                context = my_archive.read(i)
-                                                statform = xmlDict['NBUSTATREPORT']['HEAD']['STATFORM']
-                                                kod = xmlDict['NBUSTATREPORT']['HEAD']['EDRPOU']
-                                                report_date = xmlDict['NBUSTATREPORT']['HEAD']['REPORTDATE']
+                                                xml_dict = xmltodict.parse(myfile)
+                                                context = my_archive.read(y)
+                                                statform = xml_dict['NBUSTATREPORT']['HEAD']['STATFORM']
+                                                kod = xml_dict['NBUSTATREPORT']['HEAD']['EDRPOU']
+                                                report_date = xml_dict['NBUSTATREPORT']['HEAD']['REPORTDATE']
                                                 if statform in self.files_to_save_list \
                                                         and report_date == self.analysis_date:
                                                     with open(self.output_path + '/' + statform + kod + '.xml',
@@ -290,7 +284,7 @@ class Mywindow(QtWidgets.QMainWindow):
                                                      "font-weight:600; color:#ff0000;\" >ERROR!</span>")  # red colour
                 QtWidgets.QApplication.processEvents()
 
-    def Rar_archive(self, file_read):
+    def rar_archive(self, file_read):
         # method for rar archive processing
         # the same principle as in zip archive method
         done_set = set()
@@ -299,26 +293,26 @@ class Mywindow(QtWidgets.QMainWindow):
                 for i in my_archive.namelist():
                     with my_archive.open(i) as myfile:
                         try:
-                            xmlDict = xmltodict.parse(myfile)
+                            xml_dict = xmltodict.parse(myfile)
                             context = my_archive.read(i)
-                            statform = xmlDict['NBUSTATREPORT']['HEAD']['STATFORM']
-                            kod = xmlDict['NBUSTATREPORT']['HEAD']['EDRPOU']
-                            report_date = xmlDict['NBUSTATREPORT']['HEAD']['REPORTDATE']
+                            statform = xml_dict['NBUSTATREPORT']['HEAD']['STATFORM']
+                            kod = xml_dict['NBUSTATREPORT']['HEAD']['EDRPOU']
+                            report_date = xml_dict['NBUSTATREPORT']['HEAD']['REPORTDATE']
                             if statform in self.files_to_save_list and report_date == self.analysis_date:
                                 with open(self.output_path + '/' + statform + '_' + kod + '.xml', 'wb') as output_file:
                                     output_file.write(context)
                                 done_set.add(statform)
                         except Exception:
                             try:
-                                with ZipFile(myfile) as inner_archive:
-                                    for i in inner_archive.namelist():
-                                        with inner_archive.open(i) as myfile:
+                                with RarFile(myfile) as inner_archive:
+                                    for y in inner_archive.namelist():
+                                        with inner_archive.open(y) as myfile:
                                             try:
-                                                xmlDict = xmltodict.parse(myfile)
-                                                context = my_archive.read(i)
-                                                statform = xmlDict['NBUSTATREPORT']['HEAD']['STATFORM']
-                                                kod = xmlDict['NBUSTATREPORT']['HEAD']['EDRPOU']
-                                                report_date = xmlDict['NBUSTATREPORT']['HEAD']['REPORTDATE']
+                                                xml_dict = xmltodict.parse(myfile)
+                                                context = my_archive.read(y)
+                                                statform = xml_dict['NBUSTATREPORT']['HEAD']['STATFORM']
+                                                kod = xml_dict['NBUSTATREPORT']['HEAD']['EDRPOU']
+                                                report_date = xml_dict['NBUSTATREPORT']['HEAD']['REPORTDATE']
                                                 if statform in self.files_to_save_list \
                                                         and report_date == self.analysis_date:
                                                     with open(self.output_path + '/' + statform + kod + '.xml',
@@ -354,7 +348,7 @@ if __name__ == '__main__':
         pass
 
     app = QtWidgets.QApplication(sys.argv)
-    application = Mywindow()
+    application = MyWindow()
     application.show()
 
     sys.exit(app.exec())

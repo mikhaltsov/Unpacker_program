@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'settings_window.ui'
-#
-# Created by: PyQt5 UI code generator 5.13.0
-#
-# WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Settings_window(object):
+class Ui_SettingsWindow(object):
     def setupUi(self, Settings_window):
         Settings_window.setObjectName("Settings_window")
         Settings_window.resize(528, 179)
@@ -57,12 +51,3 @@ class Ui_Settings_window(object):
         self.pushButton.setText(_translate("Settings_window", "OK"))
         self.pushButton_2.setText(_translate("Settings_window", "Cancel"))
 
-
-'''if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Settings_window = QtWidgets.QWidget()
-    ui = Ui_Settings_window()
-    ui.setupUi(Settings_window)
-    Settings_window.show()
-    sys.exit(app.exec_())'''
